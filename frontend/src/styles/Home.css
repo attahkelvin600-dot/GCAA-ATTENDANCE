@@ -1,0 +1,128 @@
+.home-page {
+  min-height: 100vh;
+  padding: 22px;
+  color: #0f172a;
+  background:
+    radial-gradient(circle at 8% 10%, rgba(14, 165, 233, 0.18), transparent 34%),
+    radial-gradient(circle at 92% 16%, rgba(249, 115, 22, 0.2), transparent 36%),
+    radial-gradient(circle at 55% 92%, rgba(20, 184, 166, 0.2), transparent 38%),
+    linear-gradient(180deg, #f8fdff 0%, #eef9ff 100%);
+}
+
+.home-nav {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 10px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.home-brand {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.25px;
+}
+
+.home-nav-actions,
+.home-cta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.home-btn {
+  display: inline-block;
+  text-decoration: none;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.home-btn-primary {
+  color: #fff;
+  background: linear-gradient(130deg, #0ea5e9, #14b8a6);
+  box-shadow: 0 10px 24px rgba(14, 165, 233, 0.24);
+}
+
+.home-btn-primary:hover {
+  transform: translateY(-1px);
+}
+
+.home-btn-ghost {
+  color: #075985;
+  border: 1px solid #bae6fd;
+  background: #f0f9ff;
+}
+
+.home-btn-ghost:hover {
+  background: #e0f2fe;
+}
+
+.home-hero {
+  max-width: 820px;
+  margin: 56px auto 26px auto;
+  text-align: center;
+}
+
+.home-kicker {
+  color: #0c4a6e;
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+}
+
+.home-hero h1 {
+  font-size: clamp(34px, 6vw, 56px);
+  line-height: 1.05;
+  margin-bottom: 18px;
+}
+
+.home-subtext {
+  margin: 0 auto 28px auto;
+  max-width: 680px;
+  color: #334155;
+  font-size: 18px;
+}
+
+.home-features {
+  max-width: 1100px;
+  margin: 30px auto 10px auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.feature-card {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid #dbeafe;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08);
+}
+
+.feature-card h3 {
+  margin-bottom: 8px;
+  font-size: 19px;
+}
+
+.feature-card p {
+  color: #475569;
+  line-height: 1.5;
+}
+
+@media (max-width: 860px) {
+  .home-features {
+    grid-template-columns: 1fr;
+  }
+
+  .home-nav {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+}
