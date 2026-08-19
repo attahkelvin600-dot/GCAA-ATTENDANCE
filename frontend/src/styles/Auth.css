@@ -53,6 +53,38 @@
   flex-direction: column;
 }
 
+.login-mode-switcher {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin-bottom: 10px;
+  padding: 4px;
+  border-radius: 10px;
+  background: #f1f5f9;
+}
+
+.login-mode-switcher button {
+  padding: 9px 8px;
+  border-radius: 7px;
+  color: #475569;
+  background: transparent;
+  font-size: 12px;
+}
+
+.login-mode-switcher button.selected {
+  color: #075985;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, .08);
+}
+
+.login-mode-help {
+  min-height: 34px;
+  margin: 0 0 16px;
+  color: #64748b;
+  font-size: 12px;
+  text-align: center;
+}
+
 .auth-link {
   text-align: center;
   margin-top: 18px;

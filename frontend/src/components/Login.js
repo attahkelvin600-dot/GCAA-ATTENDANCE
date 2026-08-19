@@ -8,6 +8,7 @@ function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [managementMode, setManagementMode] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -19,7 +20,14 @@ function Login() {
       const response = await authService.login(email, password);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
-      navigate('/dashboard');
+      const isManager = ['admin', 'supervisor'].includes(response.data.user.role);
+      if (managementMode && !isManager) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setError('This account does not have management access.');
+        return;
+      }
+      navigate(managementMode ? '/management' : '/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     } finally {
@@ -32,6 +40,25 @@ function Login() {
       <div className="auth-card">
         <h1>GCAA Attendance System</h1>
         <h2>Login</h2>
+        <div className="login-mode-switcher" role="group" aria-label="Login type">
+          <button
+            type="button"
+            className={!managementMode ? 'selected' : ''}
+            onClick={() => setManagementMode(false)}
+          >
+            Personnel login
+          </button>
+          <button
+            type="button"
+            className={managementMode ? 'selected' : ''}
+            onClick={() => setManagementMode(true)}
+          >
+            Admin / Supervisor login
+          </button>
+        </div>
+        <p className="login-mode-help">
+          {managementMode ? 'Use an admin or supervisor account to open management.' : 'Sign in to record and view your attendance.'}
+        </p>
         {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
