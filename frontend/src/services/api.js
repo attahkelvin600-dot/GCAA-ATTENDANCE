@@ -21,8 +21,7 @@ api.interceptors.request.use((config) => {
 // Auth service
 export const authService = {
   register: (data) => api.post('/auth/register', data),
-  login: (email, password) => api.post('/auth/login', { email, password }),
-  verifyLoginCode: (challengeToken, code) => api.post('/auth/login/verify-code', { challengeToken, code }),
+  login: (email, password) => api.post('/auth/login', { email, password })
 };
 
 // Attendance service

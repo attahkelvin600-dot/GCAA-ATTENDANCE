@@ -9,9 +9,6 @@ function Login() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [managementMode, setManagementMode] = useState(false);
-  const [twoFactorStep, setTwoFactorStep] = useState(false);
-  const [challengeToken, setChallengeToken] = useState('');
-  const [code, setCode] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -20,17 +17,7 @@ function Login() {
     setError('');
 
     try {
-      const response = twoFactorStep
-        ? await authService.verifyLoginCode(challengeToken, code)
-        : await authService.login(email, password);
-
-      if (response.data.requiresTwoFactor) {
-        setChallengeToken(response.data.challengeToken);
-        setTwoFactorStep(true);
-        setError('');
-        return;
-      }
-
+      const response = await authService.login(email, password);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       const isManager = ['admin', 'supervisor'].includes(response.data.user.role);
@@ -52,8 +39,8 @@ function Login() {
     <div className="auth-container">
       <div className="auth-card">
         <h1>GCAA Attendance System</h1>
-        <h2>{twoFactorStep ? 'Enter login code' : 'Login'}</h2>
-        {!twoFactorStep && <div className="login-mode-switcher" role="group" aria-label="Login type">
+        <h2>Login</h2>
+        <div className="login-mode-switcher" role="group" aria-label="Login type">
           <button
             type="button"
             className={!managementMode ? 'selected' : ''}
@@ -68,13 +55,13 @@ function Login() {
           >
             Admin / Supervisor login
           </button>
-        </div>}
+        </div>
         <p className="login-mode-help">
-          {twoFactorStep ? `Enter the six-digit code sent to ${email}.` : managementMode ? 'Use an admin or supervisor account to open management.' : 'Sign in to record and view your attendance.'}
+          {managementMode ? 'Use an admin or supervisor account to open management.' : 'Sign in to record and view your attendance.'}
         </p>
         {error && <div className="error-message">{error}</div>}
         <form onSubmit={handleSubmit}>
-          {!twoFactorStep && <><div className="form-group">
+          <div className="form-group">
             <label htmlFor="email">Email</label>
             <input
               type="email"
@@ -95,29 +82,11 @@ function Login() {
               required
               placeholder="Enter your password"
             />
-          </div></>}
-          {twoFactorStep && <div className="form-group">
-            <label htmlFor="login-code">Six-digit login code</label>
-            <input
-              type="text"
-              id="login-code"
-              inputMode="numeric"
-              pattern="[0-9]{6}"
-              maxLength="6"
-              value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
-              required
-              autoFocus
-              placeholder="Enter code"
-            />
-          </div>}
+          </div>
           <button type="submit" disabled={loading} className="btn-primary">
-            {loading ? (twoFactorStep ? 'Verifying...' : 'Sending code...') : (twoFactorStep ? 'Verify and login' : 'Continue')}
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-        {twoFactorStep && <button type="button" className="login-back-button" onClick={() => { setTwoFactorStep(false); setCode(''); setChallengeToken(''); setError(''); }}>
-          Back to password login
-        </button>}
         <p className="auth-link">
           Don't have an account? <a href="/register">Register here</a>
         </p>
