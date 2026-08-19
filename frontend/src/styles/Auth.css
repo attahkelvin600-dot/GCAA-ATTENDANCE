@@ -85,6 +85,15 @@
   text-align: center;
 }
 
+.login-back-button {
+  display: block;
+  margin: 14px auto 0;
+  padding: 4px;
+  color: #075985;
+  background: transparent;
+  font-size: 12px;
+}
+
 .auth-link {
   text-align: center;
   margin-top: 18px;

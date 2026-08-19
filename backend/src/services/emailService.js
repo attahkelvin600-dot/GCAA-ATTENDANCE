@@ -38,4 +38,24 @@ const sendVerificationEmail = async ({ email, name, token }) => {
   });
 };
 
-module.exports = { sendVerificationEmail };
+const sendLoginCodeEmail = async ({ email, name, code }) => {
+  if (process.env.EMAIL_PREVIEW === 'true') {
+    console.log(`Two-step login code for ${email}: ${code}`);
+    return;
+  }
+
+  const transporter = getTransporter();
+  if (!transporter) {
+    throw new Error('Email service is not configured. Set SMTP_HOST, SMTP_USER, and SMTP_PASSWORD.');
+  }
+
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM || process.env.SMTP_USER,
+    to: email,
+    subject: 'Your GCAA Attendance login code',
+    text: `Hello ${name}, your GCAA Attendance login code is ${code}. It expires in 10 minutes.`,
+    html: `<p>Hello ${name},</p><p>Your GCAA Attendance login code is:</p><p style="font-size: 24px; font-weight: bold; letter-spacing: 6px;">${code}</p><p>This code expires in 10 minutes.</p>`
+  });
+};
+
+module.exports = { sendVerificationEmail, sendLoginCodeEmail };

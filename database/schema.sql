@@ -14,6 +14,8 @@ CREATE TABLE IF NOT EXISTS personnel (
     email_verified BOOLEAN NOT NULL DEFAULT FALSE,
     email_verification_token VARCHAR(64),
     email_verification_expires_at TIMESTAMP,
+    two_factor_code_hash VARCHAR(64),
+    two_factor_code_expires_at TIMESTAMP,
     role VARCHAR(50) DEFAULT 'personnel', -- 'personnel', 'supervisor', 'admin'
     status VARCHAR(50) DEFAULT 'active', -- 'active', 'inactive'
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -45,6 +47,8 @@ ALTER TABLE attendance ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION;
 ALTER TABLE personnel ADD COLUMN IF NOT EXISTS email_verified BOOLEAN NOT NULL DEFAULT FALSE;
 ALTER TABLE personnel ADD COLUMN IF NOT EXISTS email_verification_token VARCHAR(64);
 ALTER TABLE personnel ADD COLUMN IF NOT EXISTS email_verification_expires_at TIMESTAMP;
+ALTER TABLE personnel ADD COLUMN IF NOT EXISTS two_factor_code_hash VARCHAR(64);
+ALTER TABLE personnel ADD COLUMN IF NOT EXISTS two_factor_code_expires_at TIMESTAMP;
 
 CREATE INDEX IF NOT EXISTS idx_personnel_email ON personnel(email);
 CREATE INDEX IF NOT EXISTS idx_personnel_employee_id ON personnel(employee_id);

@@ -91,9 +91,11 @@ npm run build
 npm start
 ```
 
-#### Email Verification
+#### Email Verification and Two-Step Login
 
-New accounts must verify their email before logging in. For local testing, add this to `backend/.env`:
+New accounts must verify their email before logging in. After the password is accepted, the system sends a six-digit one-time login code to the verified email address. The code expires after 10 minutes and must be entered before access is granted.
+
+For local testing, add this to `backend/.env`:
 
 ```env
 FRONTEND_URL=http://localhost:3000

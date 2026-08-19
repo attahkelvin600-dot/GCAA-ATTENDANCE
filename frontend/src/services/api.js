@@ -22,6 +22,7 @@ api.interceptors.request.use((config) => {
 export const authService = {
   register: (data) => api.post('/auth/register', data),
   login: (email, password) => api.post('/auth/login', { email, password }),
+  verifyLoginCode: (challengeToken, code) => api.post('/auth/login/verify-code', { challengeToken, code }),
   verifyEmail: (token) => api.post('/auth/verify-email', { token }),
   resendVerification: (email) => api.post('/auth/resend-verification', { email })
 };
