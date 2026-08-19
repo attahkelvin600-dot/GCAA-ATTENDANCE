@@ -308,6 +308,7 @@ function Dashboard() {
                   <table className="records-table">
                     <thead>
                       <tr>
+                        <th>Person</th>
                         <th>Date</th>
                         <th>Check In</th>
                         <th>Check Out</th>
@@ -319,6 +320,7 @@ function Dashboard() {
                     <tbody>
                       {records.map((record) => (
                         <tr key={record.id}>
+                          <td>{record.name || user?.name || '-'}</td>
                           <td>{formatDateTime(record.check_in_time).split(',')[0]}</td>
                           <td>{formatDateTime(record.check_in_time)}</td>
                           <td>{record.check_out_time ? formatDateTime(record.check_out_time) : 'Not checked out'}</td>
