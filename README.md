@@ -91,6 +91,17 @@ npm run build
 npm start
 ```
 
+#### Email Verification
+
+New accounts must verify their email before logging in. For local testing, add this to `backend/.env`:
+
+```env
+FRONTEND_URL=http://localhost:3000
+EMAIL_PREVIEW=true
+```
+
+The backend will print verification links in its terminal. For real email delivery, set `EMAIL_PREVIEW=false` and configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD`, and `EMAIL_FROM`. See `backend/.env.example` for the full template.
+
 ---
 
 ## 📚 Documentation

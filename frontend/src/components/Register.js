@@ -40,7 +40,7 @@ function Register() {
         email: formData.email,
         password: formData.password
       });
-      navigate('/login');
+      navigate(`/verify-email?email=${encodeURIComponent(formData.email)}`);
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
     } finally {
