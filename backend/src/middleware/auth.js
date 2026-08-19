@@ -25,4 +25,13 @@ const verifyRole = (roles) => {
   };
 };
 
-module.exports = { verifyToken, verifyRole };
+const denyRole = (roles) => {
+  return (req, res, next) => {
+    if (roles.includes(req.user.role)) {
+      return res.status(403).json({ message: 'This account cannot perform attendance actions' });
+    }
+    next();
+  };
+};
+
+module.exports = { verifyToken, verifyRole, denyRole };

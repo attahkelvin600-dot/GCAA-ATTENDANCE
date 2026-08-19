@@ -20,6 +20,7 @@ function Dashboard() {
   const [records, setRecords] = useState([]);
   const [recordsLoading, setRecordsLoading] = useState(false);
   const user = JSON.parse(localStorage.getItem('user'));
+  const isAdmin = user?.role === 'admin';
 
   const formatDateTime = (dateValue) => {
     if (!dateValue) return '-';
@@ -192,6 +193,12 @@ function Dashboard() {
     window.location.href = '/login';
   };
 
+  useEffect(() => {
+    if (isAdmin) {
+      setActiveTab('records');
+    }
+  }, [isAdmin]);
+
   return (
     <div className="dashboard">
       <header className="dashboard-header">
@@ -205,18 +212,18 @@ function Dashboard() {
 
       <div className="dashboard-container">
         <div className="tabs">
-          <button
+          {!isAdmin && <button
             className={`tab ${activeTab === 'checkin' ? 'active' : ''}`}
             onClick={() => setActiveTab('checkin')}
           >
             Check In
-          </button>
-          <button
+          </button>}
+          {!isAdmin && <button
             className={`tab ${activeTab === 'checkout' ? 'active' : ''}`}
             onClick={() => setActiveTab('checkout')}
           >
             Check Out
-          </button>
+          </button>}
           <button
             className={`tab ${activeTab === 'records' ? 'active' : ''}`}
             onClick={() => setActiveTab('records')}
@@ -232,7 +239,13 @@ function Dashboard() {
             </div>
           )}
 
-          {activeTab === 'checkin' && (
+          {isAdmin && activeTab === 'records' && (
+            <div className="message success">
+              Admin accounts cannot check in or check out. Use the management dashboard to view everyone&apos;s attendance.
+            </div>
+          )}
+
+          {!isAdmin && activeTab === 'checkin' && (
             <div className="form-section">
               <h2>Check In</h2>
               <form onSubmit={handleCheckIn}>
@@ -277,7 +290,7 @@ function Dashboard() {
             </div>
           )}
 
-          {activeTab === 'checkout' && (
+          {!isAdmin && activeTab === 'checkout' && (
             <div className="form-section">
               <h2>Check Out</h2>
               <form onSubmit={handleCheckOut}>
