@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { attendanceService } from '../services/api';
 import '../styles/Dashboard.css';
 
@@ -197,6 +198,7 @@ function Dashboard() {
         <h1>GCAA Attendance Dashboard</h1>
         <div className="user-info">
           <span>Welcome, {user?.name}</span>
+          {['admin', 'supervisor'].includes(user?.role) && <Link to="/management" className="btn-secondary">Management</Link>}
           <button onClick={handleLogout} className="btn-logout">Logout</button>
         </div>
       </header>
