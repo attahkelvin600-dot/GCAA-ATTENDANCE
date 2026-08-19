@@ -11,9 +11,6 @@ CREATE TABLE IF NOT EXISTS personnel (
     employee_id VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
-    email_verified BOOLEAN NOT NULL DEFAULT FALSE,
-    email_verification_token VARCHAR(64),
-    email_verification_expires_at TIMESTAMP,
     two_factor_code_hash VARCHAR(64),
     two_factor_code_expires_at TIMESTAMP,
     role VARCHAR(50) DEFAULT 'personnel', -- 'personnel', 'supervisor', 'admin'
@@ -43,16 +40,11 @@ ALTER TABLE attendance ADD COLUMN IF NOT EXISTS location_name VARCHAR(255);
 ALTER TABLE attendance ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION;
 ALTER TABLE attendance ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION;
 
--- Ensure email verification columns exist on already-created databases
-ALTER TABLE personnel ADD COLUMN IF NOT EXISTS email_verified BOOLEAN NOT NULL DEFAULT FALSE;
-ALTER TABLE personnel ADD COLUMN IF NOT EXISTS email_verification_token VARCHAR(64);
-ALTER TABLE personnel ADD COLUMN IF NOT EXISTS email_verification_expires_at TIMESTAMP;
 ALTER TABLE personnel ADD COLUMN IF NOT EXISTS two_factor_code_hash VARCHAR(64);
 ALTER TABLE personnel ADD COLUMN IF NOT EXISTS two_factor_code_expires_at TIMESTAMP;
 
 CREATE INDEX IF NOT EXISTS idx_personnel_email ON personnel(email);
 CREATE INDEX IF NOT EXISTS idx_personnel_employee_id ON personnel(employee_id);
-CREATE INDEX IF NOT EXISTS idx_personnel_verification_token ON personnel(email_verification_token);
 CREATE INDEX IF NOT EXISTS idx_attendance_personnel_id ON attendance(personnel_id);
 CREATE INDEX IF NOT EXISTS idx_attendance_check_in_date ON attendance(DATE(check_in_time));
 

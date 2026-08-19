@@ -91,9 +91,9 @@ npm run build
 npm start
 ```
 
-#### Email Verification and Two-Step Login
+#### Two-Step Login
 
-New accounts must verify their email before logging in. After the password is accepted, the system sends a six-digit one-time login code to the verified email address. The code expires after 10 minutes and must be entered before access is granted.
+After the password is accepted, the system sends a six-digit one-time login code to the account email address. The code expires after 10 minutes and must be entered before access is granted.
 
 For local testing, add this to `backend/.env`:
 
@@ -102,7 +102,7 @@ FRONTEND_URL=http://localhost:3000
 EMAIL_PREVIEW=true
 ```
 
-The backend will print verification links in its terminal. For real email delivery, set `EMAIL_PREVIEW=false` and configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD`, and `EMAIL_FROM`. See `backend/.env.example` for the full template.
+The backend will print login codes in its terminal. For real email delivery, set `EMAIL_PREVIEW=false` and configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD`, and `EMAIL_FROM`. See `backend/.env.example` for the full template.
 
 ---
 

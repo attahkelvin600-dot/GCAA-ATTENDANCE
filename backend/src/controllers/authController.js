@@ -2,9 +2,9 @@ const pool = require('../config/database');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const { sendVerificationEmail, sendLoginCodeEmail } = require('../services/emailService');
+const { sendLoginCodeEmail } = require('../services/emailService');
 
-const hashVerificationToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
+const hashLoginCode = (code) => crypto.createHash('sha256').update(code).digest('hex');
 
 // Register new personnel
 const register = async (req, res) => {
@@ -27,29 +27,17 @@ const register = async (req, res) => {
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-    const verificationTokenHash = hashVerificationToken(verificationToken);
-
     // Insert new personnel
     const newPersonnel = await pool.query(
       `INSERT INTO personnel (
-        name, employee_id, email, password, role, email_verified,
-        email_verification_token, email_verification_expires_at, created_at
-      ) VALUES ($1, $2, $3, $4, $5, FALSE, $6, NOW() + INTERVAL '24 hours', NOW())
+        name, employee_id, email, password, role, created_at
+      ) VALUES ($1, $2, $3, $4, $5, NOW())
       RETURNING id, name, email, role`,
-      [name, employee_id, email, hashedPassword, role || 'personnel', verificationTokenHash]
+      [name, employee_id, email, hashedPassword, role || 'personnel']
     );
 
-    try {
-      await sendVerificationEmail({ email, name, token: verificationToken });
-    } catch (emailError) {
-      await pool.query('DELETE FROM personnel WHERE id = $1', [newPersonnel.rows[0].id]);
-      console.error('Verification email error:', emailError);
-      return res.status(503).json({ message: 'Account could not be created because email delivery is unavailable.' });
-    }
-
     return res.status(201).json({
-      message: 'Registration successful. Check your email to verify your account.',
+      message: 'Registration successful. You can now log in.',
       data: newPersonnel.rows[0]
     });
   } catch (error) {
@@ -76,10 +64,6 @@ const login = async (req, res) => {
 
     const personnel = user.rows[0];
 
-    if (!personnel.email_verified) {
-      return res.status(403).json({ message: 'Please verify your email before logging in.' });
-    }
-
     // Verify password
     const validPassword = await bcrypt.compare(password, personnel.password);
 
@@ -92,7 +76,7 @@ const login = async (req, res) => {
       `UPDATE personnel
        SET two_factor_code_hash = $1, two_factor_code_expires_at = NOW() + INTERVAL '10 minutes'
        WHERE id = $2`,
-      [hashVerificationToken(code), personnel.id]
+      [hashLoginCode(code), personnel.id]
     );
 
     try {
@@ -146,7 +130,7 @@ const verifyLoginCode = async (req, res) => {
        SET two_factor_code_hash = NULL, two_factor_code_expires_at = NULL
        WHERE id = $1 AND two_factor_code_hash = $2 AND two_factor_code_expires_at > NOW()
        RETURNING id, name, email, role`,
-      [challenge.id, hashVerificationToken(String(code).trim())]
+      [challenge.id, hashLoginCode(String(code).trim())]
     );
 
     if (result.rows.length === 0) {
@@ -167,54 +151,4 @@ const verifyLoginCode = async (req, res) => {
   }
 };
 
-const verifyEmail = async (req, res) => {
-  try {
-    const { token } = req.body;
-    if (!token) return res.status(400).json({ message: 'Verification token is required' });
-
-    const result = await pool.query(
-      `UPDATE personnel
-       SET email_verified = TRUE, email_verification_token = NULL, email_verification_expires_at = NULL
-       WHERE email_verification_token = $1 AND email_verification_expires_at > NOW()
-       RETURNING id, email`,
-      [hashVerificationToken(token)]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(400).json({ message: 'Verification link is invalid or expired.' });
-    }
-
-    return res.status(200).json({ message: 'Email verified successfully. You can now log in.' });
-  } catch (error) {
-    console.error('Email verification error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
-const resendVerification = async (req, res) => {
-  try {
-    const { email } = req.body;
-    if (!email) return res.status(400).json({ message: 'Email is required' });
-
-    const user = await pool.query('SELECT id, name, email, email_verified FROM personnel WHERE email = $1', [email]);
-    if (user.rows.length === 0 || user.rows[0].email_verified) {
-      return res.status(200).json({ message: 'If the account needs verification, a new email has been sent.' });
-    }
-
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-    await pool.query(
-      `UPDATE personnel
-       SET email_verification_token = $1, email_verification_expires_at = NOW() + INTERVAL '24 hours'
-       WHERE id = $2`,
-      [hashVerificationToken(verificationToken), user.rows[0].id]
-    );
-    await sendVerificationEmail({ email, name: user.rows[0].name, token: verificationToken });
-
-    return res.status(200).json({ message: 'If the account needs verification, a new email has been sent.' });
-  } catch (error) {
-    console.error('Resend verification error:', error);
-    return res.status(503).json({ message: 'Email delivery is currently unavailable.' });
-  }
-};
-
-module.exports = { register, login, verifyLoginCode, verifyEmail, resendVerification };
+module.exports = { register, login, verifyLoginCode };
